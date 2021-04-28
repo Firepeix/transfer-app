@@ -2,10 +2,23 @@
 
 namespace App\Models\User;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\AbstractModel;
 
-class Wallet extends Model
+class Wallet extends AbstractModel
 {
-    use HasFactory;
+    public function isBalanceGreaterThan(int $amount) : bool
+    {
+        return $this->amount > $amount;
+    }
+    
+    public function getBalance() : int
+    {
+        return $this->amount;
+    }
+    
+    public function sendTo(Wallet $wallet, int $amount) : void
+    {
+        $this->amount = $this->amount - $amount;
+        $wallet->amount = $wallet->amount + $amount;
+    }
 }

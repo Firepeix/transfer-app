@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Notifications\Transaction;
+
+use App\Events\Interfaces\Notification\NotifyInterface;
+use App\Models\Transaction\Transaction;
+use App\Models\User;
+use App\Primitives\NumberPrimitive;
+
+class NewTransactionNotification implements NotifyInterface
+{
+    private string $message;
+    private User $toUser;
+    
+    public function __construct(Transaction $transaction)
+    {
+        $amount = NumberPrimitive::toReal($transaction->getAmount());
+        $name = $transaction->getFromUser()->getFullName();
+        $this->message = "Que bom! Você acabou de receber R$ $amount de $name";
+        $this->toUser  = $transaction->getToUser();
+    }
+    
+    public function getToUser(): User
+    {
+        return $this->toUser;
+    }
+    
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+}

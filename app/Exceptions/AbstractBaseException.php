@@ -14,4 +14,9 @@ abstract class AbstractBaseException extends Exception
     }
     
     abstract public static function getExceptionCode() : int;
+    
+    public function log() : void
+    {
+    
+    }
 }

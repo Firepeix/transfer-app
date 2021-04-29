@@ -34,7 +34,7 @@ class MockPaymentService implements PaymentServiceInterface
     public function isAuthorized(Transaction $transaction): bool
     {
         $body = [
-            'userId' => $transaction->getFromUser()->getId(),
+            'userId' => $transaction->getPayer()->getId(),
             'amount' => $transaction->getAmount()
         ];
         

@@ -6,6 +6,7 @@ namespace App\Services\Concretes\Transaction;
 
 use App\Models\Transaction\Transaction;
 use App\Models\User;
+use App\Notifications\Transaction\NewTransactionNotification;
 use App\Services\Interfaces\Transaction\TransactionServiceInterface;
 
 class TransactionService implements TransactionServiceInterface
@@ -19,17 +20,23 @@ class TransactionService implements TransactionServiceInterface
         return false;
     }
     
-    public function createTransaction(User $fromUser, User $toUser, int $amount): Transaction
+    public function createTransaction(User $payer, User $payee, int $amount): Transaction
     {
         $transaction = new Transaction();
-        $transaction->register($fromUser, $toUser, $amount);
+        $transaction->register($payer, $payee, $amount);
         return $transaction;
     }
     
     public function commitTransaction(Transaction $transaction) : void
     {
-        $fromWallet = $transaction->getFromWallet();
-        $toWallet = $transaction->getToWallet();
-        $fromWallet->sendTo($toWallet, $transaction->getAmount());
+        $payerWallet = $transaction->getPayerWallet();
+        $payeeWallet = $transaction->getPayeeWallet();
+        $payerWallet->sendTo($payeeWallet, $transaction->getAmount());
     }
+    
+    public function createNewTransactionNotification(Transaction $transaction): NewTransactionNotification
+    {
+        return new NewTransactionNotification($transaction);
+    }
+    
 }

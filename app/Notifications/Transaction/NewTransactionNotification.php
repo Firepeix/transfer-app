@@ -16,9 +16,9 @@ class NewTransactionNotification implements NotifyInterface
     public function __construct(Transaction $transaction)
     {
         $amount = NumberPrimitive::toReal($transaction->getAmount());
-        $name = $transaction->getFromUser()->getFullName();
+        $name = $transaction->getPayer()->getFullName();
         $this->message = "Que bom! Você acabou de receber R$ $amount de $name";
-        $this->toUser  = $transaction->getToUser();
+        $this->toUser  = $transaction->getPayee();
     }
     
     public function getToUser(): User

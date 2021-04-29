@@ -16,12 +16,12 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->foreignId('from_wallet_id');
-            $table->foreignId('to_wallet_id');
+            $table->foreignId('payer_wallet_id');
+            $table->foreignId('payee_wallet_id');
             $table->integer('amount');
             $table->foreign('user_id')->on('users')->references('id');
-            $table->foreign('from_wallet_id')->on('wallets')->references('id');
-            $table->foreign('to_wallet_id')->on('wallets')->references('id');
+            $table->foreign('payer_wallet_id')->on('wallets')->references('id');
+            $table->foreign('payee_wallet_id')->on('wallets')->references('id');
             $table->timestamps();
         });
     }

@@ -13,12 +13,12 @@ class TransactionFactory extends ModelFactory
     
     public function definition() : array
     {
-        $this->addRelation('fromUser', User::factory()->make());
-        $this->addRelation('toUser', User::factory()->make());
+        $this->addRelation('payer', User::factory()->make());
+        $this->addRelation('payee', User::factory()->make());
         return [
             'user_id' => $this->relation('actionUser', User::factory()),
-            'from_wallet_id' => $this->relation('fromWallet', Wallet::factory()),
-            'to_wallet_id' => $this->relation('toWallet', Wallet::factory()),
+            'payer_wallet_id' => $this->relation('payerWallet', Wallet::factory()),
+            'payee_wallet_id' => $this->relation('payeeWallet', Wallet::factory()),
             'amount' => $this->faker->numberBetween(3000, 10000)
         ];
     }

@@ -49,7 +49,7 @@ class NotificationServiceInterfaceTest extends TestCase
         $notification = $service->createNotification($notify);
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertSame($notify->getMessage(), $notification->getMessage());
-        $this->assertSame($transaction->getToUser()->getId(), $notification->getToUserId());
+        $this->assertSame($transaction->getPayee()->getId(), $notification->getToUserId());
         $this->assertSame(NewTransactionNotification::NEW_TRANSACTION, $notification->getType());
     }
 }

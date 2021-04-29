@@ -13,8 +13,8 @@ class UserFactory extends ModelFactory
     
     public function definition() : array
     {
-        $this->addRelation('wallet', Wallet::factory()->make());
-        $this->addRelation('document', Document::factory()->make());
+        $this->addRelation('wallet', Wallet::factory()->make(), 'user_id');
+        $this->addRelation('document', Document::factory()->make(), 'user_id');
         
         return [
             'name' => $this->faker->name(),
@@ -43,4 +43,5 @@ class UserFactory extends ModelFactory
             ];
         });
     }
+    
 }

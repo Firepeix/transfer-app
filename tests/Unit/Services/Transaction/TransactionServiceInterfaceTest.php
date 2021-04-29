@@ -45,12 +45,12 @@ class TransactionServiceInterfaceTest extends TestCase
     public function testCreateTransactionSuccess() : void
     {
         $service = app(TransactionServiceInterface::class);
-        $fromUser = User::factory()->make();
-        $toUser = User::factory()->make();
-        $transaction = $service->createTransaction($fromUser, $toUser, 5000);
+        $payer = User::factory()->make();
+        $payee = User::factory()->make();
+        $transaction = $service->createTransaction($payer, $payee, 5000);
         $this->assertInstanceOf(Transaction::class, $transaction);
-        $this->assertSame($fromUser->getId(), $transaction->getFromUser()->getId());
-        $this->assertSame($toUser->getId(), $transaction->getToUser()->getId());
+        $this->assertSame($payer->getId(), $transaction->getPayer()->getId());
+        $this->assertSame($payee->getId(), $transaction->getPayee()->getId());
         $this->assertSame(5000, $transaction->getAmount());
     }
     
@@ -59,8 +59,8 @@ class TransactionServiceInterfaceTest extends TestCase
         $this->expectException(CannotTransferToYourselfException::class);
         $this->expectExceptionCode(CannotTransferToYourselfException::getExceptionCode());
         $service = app(TransactionServiceInterface::class);
-        $fromUser = User::factory()->make();
-        $service->createTransaction($fromUser, $fromUser, 5000);
+        $payer = User::factory()->make();
+        $service->createTransaction($payer, $payer, 5000);
     }
     
     public function testCreateTransactionFailIncorrectUserType() : void
@@ -68,9 +68,9 @@ class TransactionServiceInterfaceTest extends TestCase
         $this->expectException(IncorrectUserTypeToMakeTransactionException::class);
         $this->expectExceptionCode(IncorrectUserTypeToMakeTransactionException::getExceptionCode());
         $service = app(TransactionServiceInterface::class);
-        $fromUser = User::factory()->storeKeeper()->make();
-        $toUser = User::factory()->make();
-        $service->createTransaction($fromUser, $toUser, 5000);
+        $payer = User::factory()->storeKeeper()->make();
+        $payee = User::factory()->make();
+        $service->createTransaction($payer, $payee, 5000);
     }
     
     public function testCreateTransactionFailAmountLessThanOne() : void
@@ -78,9 +78,9 @@ class TransactionServiceInterfaceTest extends TestCase
         $this->expectException(TransactionMustBeBiggerThanZeroException::class);
         $this->expectExceptionCode(TransactionMustBeBiggerThanZeroException::getExceptionCode());
         $service = app(TransactionServiceInterface::class);
-        $fromUser = User::factory()->make();
-        $toUser = User::factory()->make();
-        $service->createTransaction($fromUser, $toUser, 0);
+        $payer = User::factory()->make();
+        $payee = User::factory()->make();
+        $service->createTransaction($payer, $payee, 0);
     }
     
     public function testCreateTransactionFailAmountInsufficientFunds() : void
@@ -88,21 +88,21 @@ class TransactionServiceInterfaceTest extends TestCase
         $this->expectException(InsufficientFundsException::class);
         $this->expectExceptionCode(InsufficientFundsException::getExceptionCode());
         $service = app(TransactionServiceInterface::class);
-        $fromUser = User::factory()->walletEmpty()->make();
-        $toUser = User::factory()->make();
-        $service->createTransaction($fromUser, $toUser, 5000);
+        $payer = User::factory()->walletEmpty()->make();
+        $payee = User::factory()->make();
+        $service->createTransaction($payer, $payee, 5000);
     }
     
     public function testCommitTransactionSuccess() : void
     {
         $service = app(TransactionServiceInterface::class);
         $transaction = Transaction::factory()->make();
-        $fromBalance = $transaction->getFromWallet()->getBalance();
-        $toWalletBalance = $transaction->getToWallet()->getBalance();
+        $fromBalance = $transaction->getPayerWallet()->getBalance();
+        $toWalletBalance = $transaction->getPayeeWallet()->getBalance();
         $amount = $transaction->getAmount();
         $service->commitTransaction($transaction);
-        $fromNewBalance = $transaction->getFromWallet()->getBalance();
-        $toNewWalletBalance = $transaction->getToWallet()->getBalance();
+        $fromNewBalance = $transaction->getPayerWallet()->getBalance();
+        $toNewWalletBalance = $transaction->getPayeeWallet()->getBalance();
         $this->assertSame($fromBalance - $amount, $fromNewBalance);
         $this->assertSame($toWalletBalance + $amount, $toNewWalletBalance);
     }

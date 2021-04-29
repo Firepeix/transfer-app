@@ -19,76 +19,96 @@ class Transaction extends AbstractModel
         return $this->belongsTo(User::class);
     }
     
-    public function fromUser(): HasOneThrough
+    public function payer(): HasOneThrough
     {
-        $localKey = 'from_wallet_id';
-        return $this->hasOneThrough(User::class, Wallet::class, $localKey);
+        return $this->hasOneThrough(User::class, Wallet::class, 'id', 'id', 'payer_wallet_id', 'user_id');
     }
     
-    public function toUser(): HasOneThrough
+    public function payee(): HasOneThrough
     {
-        $localKey = 'to_wallet_id';
-        return $this->hasOneThrough(User::class, Wallet::class, $localKey);
+        return $this->hasOneThrough(User::class, Wallet::class, 'id', 'id', 'payee_wallet_id', 'user_id');
     }
     
-    public function fromWallet(): BelongsTo
+    public function payerWallet(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class, 'from_wallet_id');
+        return $this->belongsTo(Wallet::class, 'payer_wallet_id');
     }
     
-    public function toWallet(): BelongsTo
+    public function payeeWallet(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class, 'to_wallet_id');
+        return $this->belongsTo(Wallet::class, 'payee_wallet_id');
     }
     
-    public function getFromUser(): User
+    public function getActionUserId() : int
     {
-        return $this->fromUser;
+        return $this->user_id;
     }
     
-    public function getToUser(): User
+    public function getActionUser() : User
     {
-        return $this->toUser;
+        return $this->actionUser;
     }
     
-    public function getFromWallet(): Wallet
+    public function getPayer(): User
     {
-        return $this->fromWallet;
+        return $this->payer;
     }
     
-    public function getToWallet(): Wallet
+    public function getPayee(): User
     {
-        return $this->toWallet;
+        return $this->payee;
     }
     
-    public function getAmount() : int
+    public function getPayerWallet(): Wallet
+    {
+        return $this->payerWallet;
+    }
+    
+    public function getPayerWalletId(): int
+    {
+        return $this->payer_wallet_id;
+    }
+    
+    public function getPayeeWallet(): Wallet
+    {
+        return $this->payeeWallet;
+    }
+    
+    public function getPayeeWalletId(): int
+    {
+        return $this->payee_wallet_id;
+    }
+    
+    public function getAmount(): int
     {
         return $this->amount;
     }
     
-    public function register(User $fromUser, User $toUser, int $amount): void
+    public function register(User $payer, User $payee, int $amount): void
     {
-        $fromWallet = $fromUser->getWallet();
-        $toWallet = $fromUser->getWallet();
-        $this->from_wallet_id = $fromWallet->getId();
-        $this->to_wallet_id = $toWallet->getId();
-        $this->amount = $amount;
-        $this->setRelation('fromUser', $fromUser);
-        $this->setRelation('toUser', $toUser);
-        $this->setRelation('fromWallet', $fromWallet);
-        $this->setRelation('toWallet', $toWallet);
+        $payerWallet           = $payer->getWallet();
+        $payeeWallet           = $payee->getWallet();
+        $this->payer_wallet_id = $payerWallet->getId();
+        $this->user_id         = $payer->getId();
+        $this->payee_wallet_id = $payeeWallet->getId();
+        $this->amount          = $amount;
+        $this->setRelation('payer', $payer);
+        $this->setRelation('actionUser', $payer);
+        $this->setRelation('payee', $payee);
+        $this->setRelation('payerWallet', $payerWallet);
+        $this->setRelation('payeeWallet', $payeeWallet);
         $this->validate();
     }
     
     public function validate(): void
     {
-        $exception = new IncorrectUserTypeToMakeTransactionException($this->fromUser);
-        throw_if(!$this->fromUser->isStandard(), $exception);
+        $exception = new IncorrectUserTypeToMakeTransactionException($this->payer);
+        throw_if(!$this->payer->isStandard(), $exception);
         $exception = new CannotTransferToYourselfException();
-        throw_if($this->fromUser->getId() === $this->toUser->getId(), $exception);
+        throw_if($this->payer->getId() === $this->payee->getId(), $exception);
         $exception = new TransactionMustBeBiggerThanZeroException();
         throw_if($this->amount < 1, $exception);
-        $exception = new InsufficientFundsException($this->fromUser);
-        throw_if(!$this->fromWallet->isBalanceGreaterThan($this->amount), $exception);
+        $exception = new InsufficientFundsException($this->payer);
+        throw_if(!$this->payerWallet->isBalanceGreaterThan($this->amount), $exception);
     }
 }

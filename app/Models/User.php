@@ -48,4 +48,9 @@ class User extends AbstractModel implements AuthenticatableContract, Authorizabl
     {
         return $this->type === self::STANDARD;
     }
+    
+    public function getEmail() : string
+    {
+        return $this->email;
+    }
 }

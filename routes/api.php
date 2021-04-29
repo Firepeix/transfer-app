@@ -9,5 +9,5 @@ Route::prefix('/transaction')->group(function () {
 });
 Route::prefix('/user')->group(function () {
     Route::post('/', UserController::class . '@store');
-    Route::update('/{userId}', UserController::class . '@update');
+    Route::put('/{userId}', UserController::class . '@update');
 });

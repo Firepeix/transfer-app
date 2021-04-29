@@ -20,7 +20,7 @@ class TransferTest extends TestCase
         $payerBalance = $payer->getWallet()->getBalance();
         $payeeBalance = $payee->getWallet()->getBalance();
         $body         = ['value' => 10000, 'payerId' => $payer->getId(), 'payeeId' => $payee->getId()];
-        $response     = $this->actingAs($payer, 'api')->post('api/transaction', $body);
+        $response     = $this->post('api/transaction', $body);
         $response->assertStatus(200);
         $responseSuccess = [
             'meta' => [
@@ -52,7 +52,7 @@ class TransferTest extends TestCase
         $payerBalance = $payerWallet->getBalance();
         $payeeBalance = $payeeWallet->getBalance();
         $body         = ['value' => 10000, 'payerId' => $payer->getId(), 'payeeId' => $payee->getId()];
-        $response     = $this->actingAs($payer, 'api')->post('api/transaction', $body);
+        $response     = $this->post('api/transaction', $body);
         $response->assertStatus(200);
         $newTransaction = [
             'amount'         => 10000,

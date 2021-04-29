@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User\Document;
 use App\Models\User\Wallet;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -29,9 +30,27 @@ class User extends AbstractModel implements AuthenticatableContract, Authorizabl
         'remember_token',
     ];
     
+    public function document(): HasOne
+    {
+        return $this->hasOne(Document::class);
+    }
+    
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
+    }
+    
+    public function register(string $name, string $email, string $password, string $type) : void
+    {
+        $this->name = $name;
+        $this->email = $email;
+        $this->password = $password;
+        $this->type = $type;
+    }
+    
+    public function getDocument() : Document
+    {
+        return $this->document;
     }
     
     public function getWallet() : Wallet
@@ -42,6 +61,21 @@ class User extends AbstractModel implements AuthenticatableContract, Authorizabl
     public function getFullName() : string
     {
         return $this->name;
+    }
+    
+    public function setFullName(string $name) : void
+    {
+        $this->name = $name;
+    }
+    
+    public function getPassword() : string
+    {
+        return $this->password;
+    }
+    
+    public function setPassword(string $password) : void
+    {
+        $this->password = $password;
     }
     
     public function isStandard() : bool

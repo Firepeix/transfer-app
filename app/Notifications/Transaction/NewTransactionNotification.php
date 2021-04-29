@@ -9,6 +9,7 @@ use App\Primitives\NumberPrimitive;
 
 class NewTransactionNotification implements NotifyInterface
 {
+    public const NEW_TRANSACTION = 1;
     private string $message;
     private User $toUser;
     
@@ -28,5 +29,10 @@ class NewTransactionNotification implements NotifyInterface
     public function getMessage(): string
     {
         return $this->message;
+    }
+    
+    public function getType(): int
+    {
+        return self::NEW_TRANSACTION;
     }
 }

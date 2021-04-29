@@ -6,9 +6,10 @@ namespace App\Services\Concretes\Notification;
 use App\Events\Interfaces\Notification\NotifyInterface;
 use App\Events\Notification\NewNotification;
 use App\Exceptions\Integration\IntegrationException;
+use App\Models\Notification\Notification;
 use App\Services\Interfaces\Notification\NotificationServiceInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class MockNotificationService implements NotificationServiceInterface
 {
@@ -26,7 +27,7 @@ class MockNotificationService implements NotificationServiceInterface
         try {
             $response = $this->client->request($method, $uri, ['json' => $body]);
             return json_decode($response->getBody(), true);
-        } catch (ClientException $exception) {
+        } catch (GuzzleException $exception) {
             throw new IntegrationException(null, $exception);
         }
     }
@@ -46,5 +47,14 @@ class MockNotificationService implements NotificationServiceInterface
         $response = $this->request(self::SEND_URI, 'POST', $body);
         $message = $response['message'] ?? 'Não Enviado';
         return  $message === 'Enviado';
+    }
+    
+    public function createNotification(NotifyInterface $notify): Notification
+    {
+        $notification = new Notification();
+        $notification->setMessage($notify->getMessage());
+        $notification->setType($notify->getType());
+        $notification->setToUser($notify->getToUser());
+        return $notification;
     }
 }

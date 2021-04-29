@@ -6,6 +6,7 @@ namespace Services\Notification;
 
 use App\Events\Notification\NewNotification;
 use App\Listeners\Notification\SendNotification;
+use App\Models\Notification\Notification;
 use App\Models\Transaction\Transaction;
 use App\Notifications\Transaction\NewTransactionNotification;
 use App\Services\Interfaces\Notification\NotificationServiceInterface;
@@ -38,5 +39,17 @@ class NotificationServiceInterfaceTest extends TestCase
         $notification = new NewTransactionNotification($transaction);
         $isSuccessful = $service->sendNotification($notification);
         $this->assertIsBool($isSuccessful);
+    }
+    
+    public function testCreateNotification() : void
+    {
+        $service = app(NotificationServiceInterface::class);
+        $transaction = Transaction::factory()->make();
+        $notify = new NewTransactionNotification($transaction);
+        $notification = $service->createNotification($notify);
+        $this->assertInstanceOf(Notification::class, $notification);
+        $this->assertSame($notify->getMessage(), $notification->getMessage());
+        $this->assertSame($transaction->getToUser()->getId(), $notification->getToUserId());
+        $this->assertSame(NewTransactionNotification::NEW_TRANSACTION, $notification->getType());
     }
 }

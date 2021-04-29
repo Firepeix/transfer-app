@@ -1,0 +1,36 @@
+version: "3.1"
+volumes:
+  transfer-app-database-data:
+    driver: local
+services:
+    webserver:
+      image: nginx:alpine
+      container_name: transfer-app-server
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "80:80"
+    mysql:
+      image: mysql:5.7
+      container_name: transfer-app-database
+      volumes:
+        - transfer-app-database-data:/var/lib/mysql
+      ports:
+        - "3306:3306"
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=transfer-app
+        - MYSQL_USER=root
+        - MYSQL_PASSWORD=root
+    php-fpm:
+      build: docker/php-fpm
+      container_name: transfer-app-php
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      environment:
+        - PHP_IDE_CONFIG=serverName=APP
+

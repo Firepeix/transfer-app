@@ -13,6 +13,8 @@ class TransactionFactory extends ModelFactory
     
     public function definition() : array
     {
+        $this->addRelation('fromUser', User::factory()->make());
+        $this->addRelation('toUser', User::factory()->make());
         return [
             'user_id' => $this->relation('actionUser', User::factory()),
             'from_wallet_id' => $this->relation('fromWallet', Wallet::factory()),

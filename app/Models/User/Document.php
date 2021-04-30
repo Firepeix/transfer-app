@@ -2,9 +2,12 @@
 
 namespace App\Models\User;
 
+use App\Exceptions\User\InvalidDocumentException;
+use App\Exceptions\User\InvalidDocumentTypeException;
 use App\Models\AbstractModel;
 use App\Models\User;
 use App\Primitives\NumberPrimitive;
+use Illuminate\Support\Str;
 
 class Document extends AbstractModel
 {
@@ -33,6 +36,31 @@ class Document extends AbstractModel
     {
         $this->user_id = $user->getId();
         $this->setRelation('user', $user);
+    }
+    
+    public function validate(): void
+    {
+        $exception = new InvalidDocumentTypeException($this->type);
+        throw_if(!in_array($this->type, [Document::CPF, Document::CNPJ]), $exception);
+        $exception = new InvalidDocumentException($this->type);
+        if ($this->type === self::CPF) {
+            throw_if(!self::validateCpf($this->value), $exception);
+        }
+        if ($this->type === self::CNPJ) {
+            throw_if(!self::validateCNPJ($this->value), $exception);
+        }
+    }
+    
+    protected static function validateCNPJ(string $documentValue) : bool
+    {
+        $number = NumberPrimitive::clean($documentValue);
+        $length = Str::length(NumberPrimitive::clean($number));
+        
+        if ($length !== 14) {
+            return false;
+        }
+        
+        return true;
     }
     
     public static function validateCpf(string $cpf): bool

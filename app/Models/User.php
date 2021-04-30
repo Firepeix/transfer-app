@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\User\InvalidTypeException;
 use App\Models\User\Document;
 use App\Models\User\Wallet;
 use Illuminate\Auth\Authenticatable;
@@ -87,4 +88,12 @@ class User extends AbstractModel implements AuthenticatableContract, Authorizabl
     {
         return $this->email;
     }
+    
+    public function validate(): void
+    {
+        $exception = new InvalidTypeException($this->type);
+        throw_if(!in_array($this->type, [User::STANDARD, User::STORE_KEEPER]), $exception);
+    }
+    
+    
 }

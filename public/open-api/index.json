@@ -1,0 +1,514 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Transfer APP",
+    "description": "Documentação da aplicação Transfer APP",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost"
+    }
+  ],
+  "paths": {
+    "/transaction": {
+      "post": {
+        "summary": "Realiza uma transferência entre usuários da plataforma",
+        "operationId": "CreateTransaction",
+        "requestBody": {
+          "description": "Todos os campos são obrigatórios, value deve ser um inteiro acima de 0",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "payerId",
+                  "payeeId",
+                  "value"
+                ],
+                "properties": {
+                  "payerId": {
+                    "type": "integer",
+                    "description": "Id do pagador",
+                    "example": 2
+                  },
+                  "payeeId": {
+                    "type": "integer",
+                    "description": "Id do beneficiário",
+                    "example": 2456
+                  },
+                  "value": {
+                    "type": "integer",
+                    "description": "Valor a ser transferido, deve ser acima de 0",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transferência realizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/TransactionModel"
+                        }
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "payerWallet": {
+                          "type": "object",
+                          "description": "Carteira do pagador",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/WalletModel"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "payeeWallet": {
+                          "type": "object",
+                          "description": "Carteira do beneficiário",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/WalletModel"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "actionUser": {
+                          "description": "Usuário que realizou a transferência",
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/WalletModel"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "description": "Mensagem de sucesso",
+                          "example": "Transferência feita com sucesso!"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Transferir"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Busca os usuários cadastrados na plataforma",
+        "operationId": "GetUsers",
+        "responses": {
+          "200": {
+            "description": "Usuários na plataforma",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/UserModel"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Usuários"
+        ]
+      },
+      "post": {
+        "summary": "Cria um usuário na plataforma",
+        "operationId": "CreateUser",
+        "requestBody": {
+          "description": "Todos os campos são obrigatórios",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "document",
+                  "email",
+                  "password",
+                  "type"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome completo do usuário",
+                    "minLength": 3,
+                    "maxLength": 255
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email do usuário"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Senha do usuário"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Tipo do usuário - standard: Padrão, store_keeper: Lojista",
+                    "enum": [
+                      "standard",
+                      "store_keeper"
+                    ]
+                  },
+                  "document": {
+                    "type": "string",
+                    "description": "Documento do usuário sem nenhuma pontuação, para lojistas CNPJ para usuários padrões CPF"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/UserModel"
+                        }
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "wallet": {
+                          "type": "object",
+                          "description": "Carteira do usuário",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/WalletModel"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "document": {
+                          "type": "object",
+                          "description": "Documento do usuário",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/DocumentModel"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "description": "Mensagem de sucesso",
+                          "example": "Cadastro realizado com sucesso!"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Usuários"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "summary": "Atualiza o usuário na plataforma",
+        "operationId": "UpdateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome completo do usuário",
+                    "minLength": 3,
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/UserModel"
+                        }
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "wallet": {
+                          "type": "object",
+                          "description": "Carteira do usuário",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/WalletModel"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "document": {
+                          "type": "object",
+                          "description": "Documento do usuário",
+                          "properties": {
+                            "data": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/DocumentModel"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "description": "Mensagem de sucesso"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Usuários"
+        ]
+      }
+    },
+    "/users/{id}/wallet": {
+      "get": {
+        "summary": "Busca a carteira do usuário informado",
+        "operationId": "GetUserWallet",
+        "responses": {
+          "200": {
+            "description": "Carteira do Usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/WalletModel"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Usuários"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DocumentModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id do documento"
+          },
+          "value": {
+            "type": "string",
+            "description": "Numero do documento"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do documento, cnpj e cpf",
+            "enum": [
+              "cpf",
+              "cnpj"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data que o documento foi criado",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Ultima data que o documento foi atualizado",
+            "format": "datetime"
+          }
+        }
+      },
+      "TransactionModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id da transferência"
+          },
+          "payerWalletId": {
+            "type": "integer",
+            "description": "Id da carteira do pagador"
+          },
+          "payeeWalletId": {
+            "type": "integer",
+            "description": "Id da carteira do beneficiário"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data que a transferência ocorreu",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data que a transferência foi atualizada",
+            "format": "datetime"
+          }
+        }
+      },
+      "UserModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id do usuário"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome completo do usuário"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email do usuário"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do usuário - standard: Padrão, store_keeper: Lojista",
+            "enum": [
+              "standard",
+              "store_keeper"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data que o usuário foi criado",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Ultima data que o usuário foi atualizado",
+            "format": "datetime"
+          }
+        }
+      },
+      "WalletModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id da carteira"
+          },
+          "balance": {
+            "type": "integer",
+            "description": "Valor que ela possui no momento"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data que a carteira foi criada",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Ultima data que a carteira foi atualizada",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,3 +13,7 @@ Route::get('/user/create/standard', function () {
 Route::get('/user/create/store-keeper', function () {
     return view('user.create-store-keeper');
 })->name('create-store-keeper');
+
+Route::get('/documentation', function () {
+    return view('documentation');
+})->name('documents');

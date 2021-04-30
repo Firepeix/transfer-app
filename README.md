@@ -1,12 +1,12 @@
 ## Transfer APP
 
-Transfer APP é um MVP de transferencia de dinheiro entre usuarios
+Transfer APP é um MVP de transferência de dinheiro entre usuários
 ele utiliza:
 - PHP 7.4
 - Laravel 8.x
 - Mysql 5.7
 
-### Instação - Docker
+### Instalação - Docker
 
 ##### 1 - Criar Containers
 Execute o seguinte comando para que os containers sejam criados, mas atenção
@@ -54,5 +54,14 @@ $ docker exec transfer-app-php php artisan test
 
 A documentação do modulo da API se encontra na especificação
 open-api no seguinte link:
+
+http://localhost/documentation
+
+A especificação em formato .json se encontra no seguinte caminho
+
+```
+$ ./public/open-api/index.json
+```
+
 
 

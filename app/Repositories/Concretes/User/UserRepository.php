@@ -46,4 +46,14 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
             $this->updateWallet($wallet);
         });
     }
+    
+    public function getUsers(): Collection
+    {
+        return User::with($this->getDefaultIncludes())->get();
+    }
+    
+    protected function getDefaultIncludes(): array
+    {
+        return ['wallet', 'document'];
+    }
 }

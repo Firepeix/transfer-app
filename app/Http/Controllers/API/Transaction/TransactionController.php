@@ -13,6 +13,7 @@ use App\Services\Interfaces\Payment\PaymentServiceInterface;
 use App\Services\Interfaces\Transaction\TransactionServiceInterface;
 use App\Transformers\Models\Transaction\TransactionTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -25,13 +26,14 @@ class TransactionController extends Controller
     private NotificationServiceInterface   $notificationService;
     
     public function __construct(
+        Request $request,
         TransactionServiceInterface $service,
         TransactionRepositoryInterface $repository,
         PaymentServiceInterface $paymentService,
         UserRepositoryInterface $userRepository,
         NotificationServiceInterface $notificationService
     ){
-        parent::__construct();
+        parent::__construct($request);
         $this->service        = $service;
         $this->repository     = $repository;
         $this->paymentService = $paymentService;

@@ -19,4 +19,6 @@ interface UserRepositoryInterface extends RepositoryInterface
     public function updateWallet(Wallet $wallet): void;
     
     public function updateWallets(Collection $wallets): void;
+    
+    public function getUsers() : Collection;
 }

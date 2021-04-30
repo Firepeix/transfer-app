@@ -16,7 +16,8 @@ class UserTransformer extends AbstractTransformer
     {
         return $this->change($user, [
             'name' => $user->getFullName(),
-            'email' => $user->getEmail()
+            'email' => $user->getEmail(),
+            'type' => $user->getType()
         ]);
     }
     

@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Services\Interfaces\User\UserServiceInterface;
 use App\Transformers\Models\User\UserTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
@@ -18,11 +19,17 @@ class UserController extends Controller
     private UserServiceInterface    $service;
     private UserRepositoryInterface $repository;
     
-    public function __construct(UserServiceInterface $service, UserRepositoryInterface $repository)
+    public function __construct(Request $request, UserServiceInterface $service, UserRepositoryInterface $repository)
     {
-        parent::__construct();
+        parent::__construct($request);
         $this->repository = $repository;
         $this->service    = $service;
+    }
+    
+    public function index() : JsonResponse
+    {
+        $users = $this->repository->getUsers();
+        return $this->getCollectionResponse($users, new UserTransformer());
     }
     
     public function store(UserCreatePostRequest $request): JsonResponse

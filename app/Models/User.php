@@ -89,6 +89,11 @@ class User extends AbstractModel implements AuthenticatableContract, Authorizabl
         return $this->email;
     }
     
+    public function getType() : string
+    {
+        return $this->type;
+    }
+    
     public function validate(): void
     {
         $exception = new InvalidTypeException($this->type);

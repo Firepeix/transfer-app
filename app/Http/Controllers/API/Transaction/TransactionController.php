@@ -15,7 +15,6 @@ use App\Transformers\Models\Transaction\TransactionTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -43,7 +42,7 @@ class TransactionController extends Controller
     
     public function transfer(TransferPostRequest $request): JsonResponse
     {
-        DB::beginTransaction();
+        $this->databaseController::beginTransaction();
         $payer       = $request->getPayer();
         $payee       = $request->getPayee();
         $transaction = $this->service->createTransaction($payer, $payee, $request->getAmount());
@@ -54,9 +53,9 @@ class TransactionController extends Controller
         $notification = $this->service->createNewTransactionNotification($transaction);
         $this->notificationService->dispatchNotification($notification);
         $message = 'Transferência feita com sucesso!';
-        $transactionTransformer = new TransactionTransformer();
-        $transactionTransformer->addIncludes('payerWallet', 'payeeWallet', 'actionUser');
-        DB::commit();
-        return $this->getItemResponse($transaction, $transactionTransformer, compact('message'));
+        $transformer = new TransactionTransformer();
+        $transformer->addIncludes('payerWallet', 'payeeWallet', 'actionUser');
+        $this->databaseController::commit();
+        return $this->getItemResponse($transaction, $transformer, compact('message'));
     }
 }

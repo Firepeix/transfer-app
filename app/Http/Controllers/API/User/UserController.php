@@ -13,7 +13,6 @@ use App\Transformers\Models\User\UserTransformer;
 use App\Transformers\Models\User\WalletTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -41,28 +40,28 @@ class UserController extends Controller
     
     public function store(UserCreatePostRequest $request): JsonResponse
     {
-        DB::beginTransaction();
+        $this->databaseController::beginTransaction();
         $user        = $this->service->createUser($request->getName(), $request->getEmail(), $request->createPassword(), $request->getType());
         $document    = $this->service->createDocument($user, $request->getDocument());
         $wallet      = $this->service->createWallet($user);
         $this->repository->insertUser($user, $document, $wallet);
         $message = 'Cadastro realizado com sucesso';
-        $transactionTransformer = new UserTransformer();
-        $transactionTransformer->addIncludes('document', 'wallet');
-        DB::commit();
-        return $this->getItemResponse($user, $transactionTransformer, compact('message'));
+        $userTransformer = new UserTransformer();
+        $userTransformer->addIncludes('document', 'wallet');
+        $this->databaseController::commit();
+        return $this->getItemResponse($user, $userTransformer, compact('message'));
     }
     
     public function update(UserUpdatePutRequest $request, int $userId): JsonResponse
     {
-        DB::beginTransaction();
+        $this->databaseController::beginTransaction();
         $user = $this->repository->findOrFail($userId);
         $this->service->updateUser($user, $request->getName(), $request->createPassword());
         $this->repository->update($user);
         $message = 'Usuário atualizado com sucesso';
         $transformer = new UserTransformer();
         $transformer->addIncludes('document', 'wallet');
-        DB::commit();
+        $this->databaseController::commit();
         return $this->getItemResponse($user, $transformer, compact('message'));
     }
 }

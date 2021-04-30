@@ -7,7 +7,7 @@ namespace App\Exceptions\Transaction;
 use App\Models\User;
 use Throwable;
 
-class IncorrectUserTypeToMakeTransactionException extends TransactionException
+class IncorrectUserTypeToTransactionException extends TransactionException
 {
     private const CODE = 1;
     

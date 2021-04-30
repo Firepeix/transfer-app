@@ -12,6 +12,14 @@ abstract class AbstractModel extends Model
 {
     use HasFactory;
     
+    private Carbon $datePrimitive;
+    
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->datePrimitive = app(Carbon::class);
+    }
+    
     public function getId() : int
     {
         return $this->id;
@@ -23,11 +31,11 @@ abstract class AbstractModel extends Model
     
     public function getCreatedAt() : Carbon
     {
-        return Carbon::parse($this->created_at);
+        return $this->datePrimitive::parse($this->created_at);
     }
     
     public function getUpdatedAt() : Carbon
     {
-        return Carbon::parse($this->updated_at);
+        return $this->datePrimitive::parse($this->updated_at);
     }
 }

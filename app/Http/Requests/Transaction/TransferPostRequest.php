@@ -26,17 +26,18 @@ class TransferPostRequest extends AbstractRequest
 
     public function rules(): array
     {
+        $rulePrimitive = app(Rule::class);
         return [
-            'payerId' => ['required', 'numeric', Rule::exists('users', 'id')],
-            'payeeId' => ['required', 'numeric', Rule::exists('users', 'id')],
+            'payerId' => ['required', 'numeric', $rulePrimitive::exists('users', 'id')],
+            'payeeId' => ['required', 'numeric', $rulePrimitive::exists('users', 'id')],
             'value' => ['required', 'numeric', 'min:1']
         ];
     }
     
     public function getPayer() : ? User
     {
-        $id = $this->get('payerId');
-        return $id !== null ? $this->userRepository->findOrFail($id) : $this->user();
+        $payerId = $this->get('payerId');
+        return $payerId !== null ? $this->userRepository->findOrFail($payerId) : $this->user();
     }
     
     public function getPayee() : User
@@ -46,6 +47,7 @@ class TransferPostRequest extends AbstractRequest
     
     public function getAmount() : int
     {
-        return NumberPrimitive::toInt($this->get('value'));
+        $numberPrimitive = app(NumberPrimitive::class);
+        return $numberPrimitive::toInt($this->get('value'));
     }
 }

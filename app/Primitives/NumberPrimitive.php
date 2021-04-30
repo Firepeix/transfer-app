@@ -14,12 +14,12 @@ class NumberPrimitive
     
     public static function toInt($value) : int
     {
-        $negative_Integer = strpos(substr($value, 0, 1), '-') !== false;
+        $negativeInteger = strpos(substr($value, 0, 1), '-') !== false;
     
         if ($value !== null) {
             $value = self::clean($value);
         }
-        if ($negative_Integer) {
+        if ($negativeInteger) {
             $value *= -1;
         }
     

@@ -3,7 +3,7 @@
 namespace App\Models\Transaction;
 
 use App\Exceptions\Transaction\CannotTransferToYourselfException;
-use App\Exceptions\Transaction\IncorrectUserTypeToMakeTransactionException;
+use App\Exceptions\Transaction\IncorrectUserTypeToTransactionException;
 use App\Exceptions\Transaction\InsufficientFundsException;
 use App\Exceptions\Transaction\TransactionMustBeBiggerThanZeroException;
 use App\Models\AbstractModel;
@@ -97,18 +97,24 @@ class Transaction extends AbstractModel
         $this->setRelation('payee', $payee);
         $this->setRelation('payerWallet', $payerWallet);
         $this->setRelation('payeeWallet', $payeeWallet);
+        $this->createValidate();
+    }
+    
+    private function createValidate() : void
+    {
         $this->validate();
+        $exception = new InsufficientFundsException($this->payer);
+        throw_if(!$this->payerWallet->isBalanceGreaterThan($this->amount), $exception);
     }
     
     public function validate(): void
     {
-        $exception = new IncorrectUserTypeToMakeTransactionException($this->payer);
+        $exception = new IncorrectUserTypeToTransactionException($this->payer);
         throw_if(!$this->payer->isStandard(), $exception);
         $exception = new CannotTransferToYourselfException();
         throw_if($this->payer->getId() === $this->payee->getId(), $exception);
         $exception = new TransactionMustBeBiggerThanZeroException();
         throw_if($this->amount < 1, $exception);
-        $exception = new InsufficientFundsException($this->payer);
-        throw_if(!$this->payerWallet->isBalanceGreaterThan($this->amount), $exception);
+        
     }
 }

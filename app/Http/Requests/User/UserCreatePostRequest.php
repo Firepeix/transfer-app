@@ -18,12 +18,13 @@ class UserCreatePostRequest extends AbstractRequest
     public function rules(): array
     {
         $type = $this->getType();
+        $rulePrimitive = app(Rule::class);
         return [
             'name' => ['required', 'min:2', 'max:255'],
-            'email' => ['required', 'min:2', Rule::unique('users', 'email')],
+            'email' => ['required', 'min:2', $rulePrimitive::unique('users', 'email')],
             'password' => ['required'],
-            'document' => ['required', 'min:11', 'max:14', new DocumentRule($type), Rule::unique('documents', 'value')],
-            'type' => ['required', Rule::in([User::STANDARD, User::STORE_KEEPER])],
+            'document' => ['required', 'min:11', 'max:14', new DocumentRule($type), $rulePrimitive::unique('documents', 'value')],
+            'type' => ['required', $rulePrimitive::in([User::STANDARD, User::STORE_KEEPER])],
         ];
     }
     
@@ -44,7 +45,8 @@ class UserCreatePostRequest extends AbstractRequest
     
     public function getDocument() : string
     {
-        return NumberPrimitive::clean($this->get('document'));
+        $numberPrimitive = app(NumberPrimitive::class);
+        return $numberPrimitive::clean($this->get('document'));
     }
     
     public function getType() : string

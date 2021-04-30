@@ -53,8 +53,10 @@ class Document extends AbstractModel
     
     protected static function validateCNPJ(string $documentValue) : bool
     {
-        $number = NumberPrimitive::clean($documentValue);
-        $length = Str::length(NumberPrimitive::clean($number));
+        $numberPrimitive = app(NumberPrimitive::class);
+        $stringPrimitive = app(Str::class);
+        $number = $numberPrimitive::clean($documentValue);
+        $length = $stringPrimitive::length($numberPrimitive::clean($number));
         
         if ($length !== 14) {
             return false;
@@ -65,13 +67,10 @@ class Document extends AbstractModel
     
     public static function validateCpf(string $cpf): bool
     {
-        $cpf      = NumberPrimitive::clean($cpf);
+        $numberPrimitive = app(NumberPrimitive::class);
+        $cpf      = $numberPrimitive::clean($cpf);
         $splitCpf = str_split($cpf);
         $digits   = [0, 1];
-        if (strlen($cpf) < 11) {
-            return false;
-        }
-        
         foreach (range(0, 9) as $digit) {
             if (str_pad('', '11', $digit) === $cpf) {
                 return false;
@@ -80,9 +79,9 @@ class Document extends AbstractModel
         
         foreach ($digits as $digit) {
             $sum = 0;
-            for ($i = 1; $i <= (9 + $digit); $i++) {
-                $result = array_slice($splitCpf, $i - 1, $i)[0];
-                $sum    += $result * ((11 + $digit) - $i);
+            for ($index = 1; $index <= (9 + $digit); $index++) {
+                $result = array_slice($splitCpf, $index - 1, $index)[0];
+                $sum    += $result * ((11 + $digit) - $index);
             }
             
             $dividend = ($sum * 10) % 11;

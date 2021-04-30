@@ -9,7 +9,7 @@ use Throwable;
 
 abstract class AbstractBaseException extends Exception
 {
-    protected array $additionalInformation = [];
+    protected array $information = [];
     public function __construct(string $message, Throwable $previous = null)
     {
         parent::__construct($message, static::getExceptionCode(), $previous);
@@ -23,9 +23,9 @@ abstract class AbstractBaseException extends Exception
             'message' => $this->message,
             'trace' => $this->getTrace(),
             'line' => $this->getLine(),
-            'moreInfo' => $this->additionalInformation
+            'moreInfo' => $this->information
         ];
         
-        Log::info(json_encode($information));
+        app(Log::class)::info(json_encode($information));
     }
 }

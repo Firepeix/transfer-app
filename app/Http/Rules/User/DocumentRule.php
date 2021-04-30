@@ -13,15 +13,22 @@ class DocumentRule implements Rule
     private string $type;
     private array $messages;
     
+    private NumberPrimitive $numberPrimitive;
+    private Str $stringPrimitive;
+    private Document $documentPrimitive;
+    
     public function __construct(string $type)
     {
         $this->type = $type;
         $this->messages = [];
+        $this->numberPrimitive = app(NumberPrimitive::class);
+        $this->stringPrimitive = app(Str::class);
+        $this->documentPrimitive = app(Document::class);
     }
 
     public function passes($attribute, $value) : bool
     {
-        if ($value !== null) {
+        if ($value !== null && $attribute === 'document') {
             return $this->validateGeneral($value);
         }
         $this->messages[] = 'Documento não pode ser um valor nulo';
@@ -40,8 +47,8 @@ class DocumentRule implements Rule
     
     private function validateCPF(string $documentValue) : bool
     {
-        $number = NumberPrimitive::clean($documentValue);
-        $length = Str::length(NumberPrimitive::clean($number));
+        $number = $this->numberPrimitive::clean($documentValue);
+        $length = $this->stringPrimitive::length($this->numberPrimitive::clean($number));
         
         if ($length !== 11) {
             $this->messages[] = 'Devido ao tipo de usuário em documento deve ser informar o CPF';
@@ -49,7 +56,7 @@ class DocumentRule implements Rule
             return false;
         }
         
-        if (!Document::validateCpf($number)) {
+        if (!$this->documentPrimitive::validateCpf($number)) {
             $this->messages[] = 'Numero de CPF inexistente ou invalido!';
             return false;
         }
@@ -59,8 +66,8 @@ class DocumentRule implements Rule
     
     private function validateCNPJ(string $documentValue) : bool
     {
-        $number = NumberPrimitive::clean($documentValue);
-        $length = Str::length(NumberPrimitive::clean($number));
+        $number = $this->numberPrimitive::clean($documentValue);
+        $length = $this->stringPrimitive::length($this->numberPrimitive::clean($number));
         
         if ($length !== 14) {
             $this->messages[] = 'Devido ao tipo de usuário em documento deve ser informar o CNPJ';

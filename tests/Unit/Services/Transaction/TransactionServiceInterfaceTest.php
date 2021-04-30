@@ -4,7 +4,7 @@
 namespace Services\Transaction;
 
 use App\Exceptions\Transaction\CannotTransferToYourselfException;
-use App\Exceptions\Transaction\IncorrectUserTypeToMakeTransactionException;
+use App\Exceptions\Transaction\IncorrectUserTypeToTransactionException;
 use App\Exceptions\Transaction\InsufficientFundsException;
 use App\Exceptions\Transaction\TransactionMustBeBiggerThanZeroException;
 use App\Models\Transaction\Transaction;
@@ -65,8 +65,8 @@ class TransactionServiceInterfaceTest extends TestCase
     
     public function testCreateTransactionFailIncorrectUserType() : void
     {
-        $this->expectException(IncorrectUserTypeToMakeTransactionException::class);
-        $this->expectExceptionCode(IncorrectUserTypeToMakeTransactionException::getExceptionCode());
+        $this->expectException(IncorrectUserTypeToTransactionException::class);
+        $this->expectExceptionCode(IncorrectUserTypeToTransactionException::getExceptionCode());
         $service = app(TransactionServiceInterface::class);
         $payer = User::factory()->storeKeeper()->make();
         $payee = User::factory()->make();

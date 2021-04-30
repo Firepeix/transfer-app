@@ -10,6 +10,13 @@ use League\Fractal\TransformerAbstract;
 
 abstract class AbstractTransformer extends TransformerAbstract
 {
+    private Str $stringHelper;
+    
+    public function __construct()
+    {
+        $this->stringHelper = app(Str::class);
+    }
+    
     public function change($item, array $information) : array
     {
         if ($item instanceof AbstractModel) {
@@ -30,7 +37,7 @@ abstract class AbstractTransformer extends TransformerAbstract
         $alreadyIncludes = $scope === null ? collect() : collect($scope->getManager()->getRequestedIncludes());
         foreach ($includes as $item) {
             $foundInclude = $alreadyIncludes->first(function (string $include) use ($item) {
-                return Str::contains($include, $item);
+                return $this->stringHelper::contains($include, $item);
             });
             if ($foundInclude === null) {
                 $this->defaultIncludes[] = $item;

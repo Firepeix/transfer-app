@@ -52,12 +52,12 @@ $ docker exec transfer-app-php php artisan test
 
 ## Documentação
 
-A documentação do modulo da API se encontra na especificação
-open-api no seguinte link:
+A documentação do modulo da API ficará disponível após a instalação da 
+aplicação, na especificação open-api no seguinte link:
 
 http://localhost/documentation
 
-A especificação em formato .json se encontra no seguinte caminho
+A especificação em formato .json se encontra no seguinte caminho:
 
 ```
 $ ./public/open-api/index.json

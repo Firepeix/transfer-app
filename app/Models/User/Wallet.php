@@ -9,7 +9,7 @@ class Wallet extends AbstractModel
 {
     public function register(User $user) : void
     {
-        $this->user_id = $user->getId();
+        $this->user_id = $user->exists ? $user->getId() : null;
         $this->amount = 0;
         $this->setRelation('user', $user);
     }

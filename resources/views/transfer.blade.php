@@ -121,7 +121,7 @@
         const payee = document.querySelector('#payeeId')
         const value = document.querySelector('#value')
         if (payer && payee && payer.value !== '0' && payee.value !== '0') {
-          const body = {value: Number(value.value.replace(/\D/, '')), payeeId: payee.value, payerId: payer.value}
+          const body = {value: Number(value.value.replace(/\D/gm, '')), payeeId: payee.value, payerId: payer.value}
           Swal.fire({
             title: 'Processando!',
             timerProgressBar: true,
@@ -139,6 +139,25 @@
               willClose: () => onTransferLoad()
             })
           } catch (error) {
+            if (error.response.status === 422) {
+              Swal.close()
+              Object.values(error.response.data.errors).forEach(errorType => {
+                errorType.forEach(error => {
+                  const errorToast = Toastify({
+                    text: error,
+                    duration: 3000,
+                    close: true,
+                    gravity: "bottom",
+                    position: "center",
+                    stopOnFocus: false,
+                  });
+                  errorToast.options.style.background = '#f44336';
+                  errorToast.showToast();
+                });
+              });
+              return;
+            }
+
             Swal.fire({
               icon: 'error',
               title: 'Oops...',

@@ -25,10 +25,10 @@ class UserService implements UserServiceInterface
         $user->setPassword($password ?? $user->getPassword());
     }
     
-    public function createDocument(User $user, string $document): Document
+    public function createDocument(User $user, string $documentNumber): Document
     {
         $document = new Document();
-        $document->register($user, $document);
+        $document->register($user, $documentNumber);
         return $document;
     }
     

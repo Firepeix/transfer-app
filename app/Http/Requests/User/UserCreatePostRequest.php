@@ -20,9 +20,9 @@ class UserCreatePostRequest extends AbstractRequest
         $type = $this->getType();
         return [
             'name' => ['required', 'min:2', 'max:255'],
-            'email' => ['required', 'min:2', Rule::exists('users', 'email')],
+            'email' => ['required', 'min:2', Rule::unique('users', 'email')],
             'password' => ['required'],
-            'document' => ['required', 'min:11', 'max:14', new DocumentRule($type), Rule::exists('documents', 'value')],
+            'document' => ['required', 'min:11', 'max:14', new DocumentRule($type), Rule::unique('documents', 'value')],
             'type' => ['required', Rule::in([User::STANDARD, User::STORE_KEEPER])],
         ];
     }
@@ -49,6 +49,6 @@ class UserCreatePostRequest extends AbstractRequest
     
     public function getType() : string
     {
-        return $this->get('type');
+        return $this->get('type') ?? '';
     }
 }

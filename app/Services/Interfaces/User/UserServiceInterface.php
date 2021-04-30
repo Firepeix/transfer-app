@@ -14,7 +14,7 @@ interface UserServiceInterface
     
     public function updateUser(User $user, ?string $name, ? string $password) : void;
     
-    public function createDocument(User $user, string $document) : Document;
+    public function createDocument(User $user, string $documentNumber) : Document;
     
     public function createWallet(User $user) : Wallet;
 }

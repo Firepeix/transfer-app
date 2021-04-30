@@ -29,7 +29,7 @@ class TransferPostRequest extends AbstractRequest
         return [
             'payerId' => ['required', 'numeric', Rule::exists('users', 'id')],
             'payeeId' => ['required', 'numeric', Rule::exists('users', 'id')],
-            'value' => ['required', 'numeric']
+            'value' => ['required', 'numeric', 'min:1']
         ];
     }
     

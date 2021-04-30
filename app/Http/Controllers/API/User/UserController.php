@@ -10,6 +10,7 @@ use App\Http\Requests\User\UserUpdatePutRequest;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Services\Interfaces\User\UserServiceInterface;
 use App\Transformers\Models\User\UserTransformer;
+use App\Transformers\Models\User\WalletTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,12 @@ class UserController extends Controller
     {
         $users = $this->repository->getUsers();
         return $this->getCollectionResponse($users, new UserTransformer());
+    }
+    
+    public function getWallet(int $userId) : JsonResponse
+    {
+        $user = $this->repository->findOrFail($userId);
+        return $this->getItemResponse($user->getWallet(), new WalletTransformer());
     }
     
     public function store(UserCreatePostRequest $request): JsonResponse
